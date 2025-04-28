@@ -1,19 +1,15 @@
-豆瓣电影 Top 30 数据爬取与可视化项目项目说明本项目旨在通过自动化手段爬取豆瓣电影 Top 30 的相关信息，并以可视化的方式展示这些电影的评分。
-通过 Selenium 模拟浏览器操作，爬取电影标题、评分、短评和链接等数据，并利用 HTML/CSS 创建一个简单的可视化网页，直观展示电影评分信息。
-环境配置依赖库:
-在运行本项目之前，
-请确保已安装以下 Python 依赖库：• Selenium• Pandas• Matplotlib可以通过以下命令安装所需的依赖库：bashpip install selenium pandas matplotlib
-浏览器驱动本项目使用 Selenium 模拟浏览器操作，需要安装对应的浏览器驱动程序。根据代码中的设置，项目使用的是 Edge 浏览器驱动（  webdriver.Edge()  ）。
-请根据您的浏览器版本下载并安装对应的 Edge WebDriver：• 下载地址：Microsoft Edge WebDriver下载完成后，将   msedgedriver.exe   
-放置在系统的 PATH 中，或者在代码中指定其路径。其他环境• Python 版本：建议使用 Python 3.8 及以上版本。• 浏览器：Microsoft Edge（Chromium 版本）
-运行方式1. 准备工作1. 安装所需的 Python 依赖库（如上所述）。2. 下载并安装对应的 Edge WebDriver，并确保其路径正确。3. 确保您的网络可以正常访问 豆瓣电影 Top 250 页面。
-2. 运行代码将以下代码保存为   douban_top30.py   文件，并在终端或命令行中运行：python
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import pandas as pd
+from IPython.display import IFrame
 
-# 初始化 WebDriver
+# 设置中文字体
+import matplotlib.pyplot as plt
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用于显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用于显示负号
+
+# 初始化WebDriver
 driver = webdriver.Edge()
 url = "https://movie.douban.com/top250"
 driver.get(url)
@@ -78,7 +74,7 @@ for i in range(2):  # 前30部电影分布在前两页
 # 关闭浏览器
 driver.quit()
 
-# 将数据保存为 DataFrame
+# 将数据保存为DataFrame
 df = pd.DataFrame(result_list)
 
 # 提取电影标题、评分和链接
@@ -86,14 +82,14 @@ titles = df['title']
 ratings = df['rating_num'].astype(float)
 urls = df['url']
 
-# 创建 HTML 内容
+# 创建HTML内容
 html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>豆瓣电影 Top 30 评分</title>
+    <title>豆瓣电影Top30评分</title>
     <style>
         .chart {
             width: 100%;
@@ -122,10 +118,10 @@ html_content = """
 </head>
 <body>
     <div class="chart">
-        <h1>豆瓣电影 Top 30 评分</h1>
+        <h1>豆瓣电影Top30评分</h1>
 """
 
-# 添加条形图数据到 HTML
+# 添加条形图数据到HTML
 for title, rating, url in zip(titles, ratings, urls):
     html_content += f"""
         <div class="chart-bar">
@@ -140,13 +136,9 @@ html_content += """
 </html>
 """
 
-# 保存 HTML 文件
+# 保存HTML文件
 with open("douban_top30.html", "w", encoding="utf-8") as file:
     file.write(html_content)
 
-print("HTML 文件已生成：douban_top30.html")
-3. 查看结果运行代码后，程序会生成一个名为   douban_top30.html   的文件。您可以通过浏览器打开该文件，查看豆瓣电影 Top 30 的评分可视化结果。注意事项1. 豆瓣网站可能有反爬虫机制，请合理使用爬虫，避免频繁访问导致 IP 被封。2. 如果在运行过程中遇到问题，请检查网络连接、浏览器驱动版本以及代码中的 URL 是否正确。3. 本项目仅供学习和研究使用，请遵守相关法律法规和网站的使用条款。项目结构豆瓣电影 Top 30 爬虫项目/
-│
-├── douban_top30.py          # 主程序代码
-├── douban_top30.html        # 生成的可视化网页文件
-└── README.md                # 项目说明文档
+# 显示HTML文件
+IFrame("douban_top30.html", width="100%", height="600")
